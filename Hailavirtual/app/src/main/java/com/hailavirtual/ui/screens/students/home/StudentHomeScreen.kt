@@ -16,25 +16,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-data class LessonUi(
-    val title: String,
-    val subtitle: String,
-    val color: Color
-)
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
-fun HomeScreen(
+fun StudentHomeScreen(
+    viewModel: StudentHomeScreenViewModel = hiltViewModel(),
     onAddClick: () -> Unit = {}
 ) {
-    val lessons = listOf(
-        LessonUi("Lectia 3 -", "Lorem ipsum", Color(0xFF0000CC)),
-        LessonUi("Lectia 2 -", "Lorem ipsum", Color(0xFF3C0F84)),
-        LessonUi("Lectia 1 -", "Lorem ipsum", Color(0xFFcf0072))
-    )
+    val lessons = viewModel.lessons
 
     Scaffold(
         topBar = { HomeTopBar() },
@@ -187,13 +178,5 @@ private fun HomeTopBar() {
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun HomeScreenPreview() {
-    MaterialTheme {
-        HomeScreen()
     }
 }
