@@ -43,6 +43,7 @@ androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version
 androidx-ui-viewbinding = { module = "androidx.compose.ui:ui-viewbinding", version = "1.9.4" }
 
 core = { module = "com.composables:core", version.ref = "core" }
+firebase-ai = { module = "com.google.firebase:firebase-ai" }
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 #noinspection SimilarGradleDependency
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
