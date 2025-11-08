@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LessonsScreenViewModel @Inject constructor(
+class StudentLessonsScreenViewModel @Inject constructor(
     private val labRepository: LabRepository
 ) : ViewModel() {
 
@@ -45,7 +45,7 @@ class LessonsScreenViewModel @Inject constructor(
             isLoading = true
             try {
                 substances = labRepository.getSubstances()
-                equipments = labRepository.getEquipments()
+                equipments = labRepository.getEquipements()
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {

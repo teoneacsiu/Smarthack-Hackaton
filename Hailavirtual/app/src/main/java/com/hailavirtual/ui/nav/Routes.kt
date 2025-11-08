@@ -1,11 +1,27 @@
 package com.hailavirtual.ui.nav
 
-object Routes {
-    val ADMIN_HOME = "Admin_Home"
-    val TEACHER_HOME = "Teacher_Home"
-    val SCHOOL_HOME = "School_Home"
-    val START = "Start_Screen"
-    val CHOOSE_CLASS = "ChooseClass"
-    val CUSTOM_EXPR = "Custom_expr"
-    val LESSON = "lesson"
+sealed class Route(val route: String) {
+    // Flow general / auth
+    data object Start : Route("start")
+    data object Login : Route("login")
+
+    // Role homes
+    data object AdminHome : Route("admin_home")
+    data object TeacherHome : Route("teacher_home")
+    data object SchoolHome : Route("school_home")
+
+    // Student flow
+    data object ChooseClass : Route("student_choose_class")
+    data object StudentHome : Route("student_home")
+    data object StudentLessons : Route("student_lessons")
+    data object StudentEndLesson : Route("student_end_lesson")
+    data object StudentCustomExp : Route("student_custom_exp")
+
+    // Teacher flow
+    data object TeacherLessons : Route("teacher_lessons")
+    data object TeacherAddLesson : Route("teacher_add_lesson")
+    data object TeacherClasses : Route("teacher_classes")
+
+    // School/Admin utilities
+    data object ManageTeachers : Route("manage_teachers")
 }

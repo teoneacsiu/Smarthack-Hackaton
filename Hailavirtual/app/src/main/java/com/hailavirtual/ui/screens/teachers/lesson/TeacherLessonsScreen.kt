@@ -17,19 +17,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-data class TeacherLessonUi(
-    val title: String,
-    val subtitle: String,
-    val color: Color
-)
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
-fun LessonsScreen(
-    lessons: List<TeacherLessonUi> = sampleLessons,
+fun TeacherLessonsScreen(
+    viewModel: TeacherLessonsScreenViewModel = hiltViewModel(),
     onAddLessonClick: () -> Unit = {},        // aici tratezi "adauga lectie"
     onLessonClick: (TeacherLessonUi) -> Unit = {} // optional, click pe card
 ) {
@@ -78,7 +72,7 @@ fun LessonsScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                lessons.forEach { lesson ->
+                viewModel.lessons.forEach { lesson ->
                     LessonCard(
                         lesson = lesson,
                         onClick = { onLessonClick(lesson) }
@@ -194,20 +188,5 @@ private fun LessonsTopBar() {
                 )
             }
         }
-    }
-}
-
-// lista demo, doar ca sa vezi ceva in Preview
-private val sampleLessons = listOf(
-    TeacherLessonUi("Lectia 3 -", "Lorem ipsum", Color(0xFF0000CC)),
-    TeacherLessonUi("Lectia 2 -", "Lorem ipsum", Color(0xFF3C0F84)),
-    TeacherLessonUi("Lectia 1 -", "Lorem ipsum", Color(0xFFcf0072))
-)
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LessonsScreenPreview() {
-    MaterialTheme {
-        LessonsScreen()
     }
 }
