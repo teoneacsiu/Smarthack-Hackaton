@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Hailavirtual</string>
+    <string name="exit_retry">exit\n</string>
 </resources>
