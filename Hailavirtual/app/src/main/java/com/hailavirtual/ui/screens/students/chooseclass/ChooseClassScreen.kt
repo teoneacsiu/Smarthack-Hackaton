@@ -17,12 +17,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun ChooseClassScreen(
+    viewModel: ChooseClassScreenViewModel = hiltViewModel(),
     onAddClick: (String) -> Unit = {}
 ) {
-    var classId by remember { mutableStateOf("") }
+    val classId = viewModel.classId
 
     Box(
         modifier = Modifier
@@ -64,8 +66,8 @@ fun ChooseClassScreen(
                 contentAlignment = Alignment.Center
             ) {
                 TextField(
-                    value = classId,
-                    onValueChange = { classId = it },
+                    value = viewModel.classId,
+                    onValueChange = { viewModel.onClassIdChange(it) },
                     singleLine = true,
                     textStyle = LocalTextStyle.current.copy(
                         textAlign = TextAlign.Center,

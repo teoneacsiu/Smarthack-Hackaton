@@ -18,7 +18,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -32,7 +31,14 @@ import com.hailavirtual.ui.auth.LoginScreen
 import com.hailavirtual.ui.auth.LoginViewModel
 import com.hailavirtual.ui.screens.admin.main.MainScreen
 import com.hailavirtual.ui.screens.school.manageteacher.ManageScreen
-import com.hailavirtual.ui.screens.teachers.home.HomeScreen
+import com.hailavirtual.ui.screens.start.StartScreen
+import com.hailavirtual.ui.screens.students.chooseclass.ChooseClassScreen
+import com.hailavirtual.ui.screens.students.endlesson.EndLessonScreen
+import com.hailavirtual.ui.screens.students.home.StudentHomeScreen
+import com.hailavirtual.ui.screens.students.lesson.StudentLessonsScreen
+import com.hailavirtual.ui.screens.teachers.addlesson.AddLessonScreen
+import com.hailavirtual.ui.screens.teachers.lesson.TeacherLessonsScreen
+import com.hailavirtual.ui.screens.teachers.schoolclass.SchoolClassScreen
 
 @Composable
 fun Navigation(startDestination: String) {
@@ -44,9 +50,9 @@ fun Navigation(startDestination: String) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val isOnHomeRoot =
-        currentRoute == Routes.ADMIN_HOME ||
-                currentRoute == Routes.SCHOOL_HOME ||
-                currentRoute == Routes.TEACHER_HOME
+        currentRoute == Route.AdminHome.route ||
+                currentRoute == Route.SchoolHome.route ||
+                currentRoute == Route.TeacherHome.route
 
     // back de 2 ori pentru ieisre din home
     BackHandler(enabled = isOnHomeRoot) {
@@ -62,54 +68,104 @@ fun Navigation(startDestination: String) {
         }
     }
 
-    NavHost(navController, startDestination = startDestination) {
-        composable(Routes.ADMIN_HOME) { MainScreen() }
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
+        // START
+        composable(Route.Start.route) {
+            StartScreen(
+                onProfesorClick = { navController.navigate(Route.Login.route) },
+                onElevClick = { navController.navigate(Route.ChooseClass.route) },
+                onAdminClick = { navController.navigate(Route.Login.route) }
+            )
+        }
 
-        composable(Routes.TEACHER_HOME) { HomeScreen() }
-
-        composable(Routes.SCHOOL_HOME) { ManageScreen() }
-
-        composable(Routes.CHOOSE_CLASS) { SimpleTabBody("Home") }
-
-        composable(Routes.CUSTOM_EXPR) { SimpleTabBody("Home") }
-
-        composable(Routes.LESSON)  { SimpleTabBody("Post") }
-
-        // LOGIN
-        composable(Routes.START) {
-            val loginVm: LoginViewModel = hiltViewModel()
-            val state by loginVm.state.collectAsStateWithLifecycle()
-            val nav = navController
-
-            LaunchedEffect(state.success, state.role) {
-                if (state.success && state.role != null) {
-                    val dest = when (state.role) {
-                        UserRole.ADMIN -> Routes.ADMIN_HOME
-                        UserRole.SCHOOL -> Routes.SCHOOL_HOME
-                        UserRole.TEACHER -> Routes.TEACHER_HOME
-                        null -> TODO()
-                    }
-                    nav.navigate(dest) {
-                        popUpTo(Routes.START) { inclusive = true }
-                    }
-                    loginVm.onEvent(LoginEvent.SuccessConsumed)
-                }
-            }
-
+        // LOGIN – redirectioneaza in functie de rol
+        composable(Route.Login.route) {
+            val vm: LoginViewModel = hiltViewModel()
             LoginScreen(
-                vm = loginVm,
+                vm = vm,
                 onLoggedIn = { role ->
-                    val targetRoute = when (role) {
-                        UserRole.ADMIN -> Routes.ADMIN_HOME
-                        UserRole.SCHOOL -> Routes.SCHOOL_HOME
-                        UserRole.TEACHER -> Routes.TEACHER_HOME
-                    }
-                    navController.navigate(targetRoute) {
-                        popUpTo(Routes.START) { inclusive = true }
+                    when (role) {
+                        UserRole.ADMIN -> navController.navigate(Route.AdminHome.route) {
+                            popUpTo(Route.Start.route) { inclusive = true }
+                        }
+
+                        UserRole.TEACHER -> navController.navigate(Route.TeacherHome.route) {
+                            popUpTo(Route.Start.route) { inclusive = true }
+                        }
+
+                        UserRole.SCHOOL -> navController.navigate(Route.SchoolHome.route) {
+                            popUpTo(Route.Start.route) { inclusive = true }
+                        }
                     }
                 }
             )
         }
+
+        // ADMIN HOME (MainScreen placeholder in proiect)
+        composable(Route.AdminHome.route) { MainScreen() }
+
+        // SCHOOL HOME (Manage teachers)
+        composable(Route.SchoolHome.route) { ManageScreen() }
+
+        // STUDENT FLOW
+        composable(Route.ChooseClass.route) {
+            ChooseClassScreen(
+                onAddClick = { /* classId -> */ navController.navigate(Route.StudentHome.route) }
+            )
+        }
+        composable(Route.StudentHome.route) {
+            StudentHomeScreen(
+                onAddClick = { navController.navigate(Route.StudentLessons.route) }
+            )
+        }
+        composable(Route.StudentLessons.route) { StudentLessonsScreen() }
+        composable(Route.StudentEndLesson.route) {
+            EndLessonScreen(
+                lessonTitle = "Lectia 1",
+                onRepeatExperimentClick = { /* TODO */ },
+                onViewBrevierClick = { /* TODO */ },
+                onViewTestClick = { /* TODO */ }
+            )
+        }
+        // Momentan CustomExpScreen nu este @Composable (clasa goala)
+        composable(Route.StudentCustomExp.route) {
+            // TODO: transforma in @Composable real
+        }
+
+        // TEACHER FLOW
+        composable(Route.TeacherHome.route) {
+            TeacherLessonsScreen(
+                onAddLessonClick = { navController.navigate(Route.TeacherAddLesson.route) },
+                onLessonClick = { /* TODO: detalii lectie */ }
+            )
+        }
+        composable(Route.TeacherLessons.route) {
+            TeacherLessonsScreen(
+                onAddLessonClick = { navController.navigate(Route.TeacherAddLesson.route) }
+            )
+        }
+        composable(Route.TeacherAddLesson.route) {
+            AddLessonScreen(
+                onChooseSubstancesClick = { /* TODO */ },
+                onChooseMaterialsClick = { /* TODO */ },
+                onChooseRecipeClick = { /* TODO */ },
+                onCreateClick = { navController.popBackStack() }
+            )
+        }
+        composable(Route.TeacherClasses.route) {
+            // SchoolClassScreen cere o lista in params -> mutati in ViewModel
+            SchoolClassScreen(
+                classes = emptyList(),
+                onClassClick = { /* TODO */ },
+                onSettingsClick = { /* TODO */ }
+            )
+        }
+
+        // UTILITATI
+        composable(Route.ManageTeachers.route) { ManageScreen() }
     }
 }
 
