@@ -29,21 +29,6 @@ class AuthViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(5_000),
             null)
 
-    val isAdmin: StateFlow<Boolean> =
-        currentUser
-            .map { it?.role == UserRole.ADMIN }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    val isSchool: StateFlow<Boolean> =
-        currentUser
-            .map { it?.role == UserRole.SCHOOL }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    val isTeacher: StateFlow<Boolean> =
-        currentUser
-            .map { it?.role == UserRole.TEACHER }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
     init {
         viewModelScope.launch {
             session.isValid.collect { valid ->
