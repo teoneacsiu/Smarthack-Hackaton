@@ -22,7 +22,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.runtime.R
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -38,11 +37,10 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-//import com.nba_team_rand_gen.ui.nav.NavigationItem
-//import com.nba_team_rand_gen.ui.auth.AuthViewModel
-//import com.nba_team_rand_gen.ui.auth.LoginScreen
-//import com.nba_team_rand_gen.ui.auth.SignUpScreen
-//import com.nba_team_rand_gen.ui.nav.Navigation
+import com.hailavirtual.data.model.UserRole
+import com.hailavirtual.ui.auth.AuthViewModel
+import com.hailavirtual.ui.auth.LoginScreen
+import com.hailavirtual.ui.nav.Navigation
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -54,24 +52,20 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val authVm: AuthViewModel = hiltViewModel()
-            val loggedIn by authVm.isLoggedIn.collectAsStateWithLifecycle()
-
-            var showSignUp by rememberSaveable { mutableStateOf(false) }
+            val loggedIn by authVm.isAdmin.collectAsStateWithLifecycle()
 
             MaterialTheme {
                 if (!loggedIn) {
-                    if (showSignUp) {
-                        SignUpScreen(
-                            onSignInClick = { showSignUp = false }
-                        )
-                    } else {
-                        LoginScreen(
-                            onLoggedIn = {},
-                            onCreateAccount = { showSignUp = true }
-                        )
-                    }
+                    LoginScreen(
+                        onLoggedIn = { role ->
+                            when (role) {
+                                UserRole.ADMIN -> navController.navigate("adminHome")
+                                UserRole.SCHOOL -> navController.navigate("schoolHome")
+                                UserRole.TEACHER -> navController.navigate("teacherHome")
+                            }
+                        }
+                    )
                 } else {
-
                     MainScreen(
                         onConfirmSignOut = {
                             authVm.signOut()
@@ -96,7 +90,7 @@ class MainActivity : ComponentActivity() {
                 )
             },
             bottomBar = { BottomNavigationBar(navController) },
-            containerColor = colorResource(androidx.compose.runtime.R.color.splash_color),
+            containerColor = colorResource(R.color.splash_color),
             contentWindowInsets = WindowInsets.systemBars
         ) { padding ->
             Box(
@@ -125,13 +119,13 @@ class MainActivity : ComponentActivity() {
         TopAppBar(
             title = {
                 Text(
-                    text = stringResource(androidx.compose.runtime.R.string.app_name),
+                    text = stringResource(R.string.app_name),
                     fontSize = 18.sp,
                     color = Color.White
                 )
             },
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = colorResource(id = androidx.compose.runtime.R.color.splash_color),
+                containerColor = colorResource(id = R.color.splash_color),
                 titleContentColor = Color.White,
                 navigationIconContentColor = Color.White,
                 actionIconContentColor = Color.White
@@ -140,7 +134,7 @@ class MainActivity : ComponentActivity() {
                 IconButton(onClick = onSignOutClick) {
                     runCatching {
                         Icon(
-                            painter = painterResource(id = androidx.compose.runtime.R.drawable.sign_out_svg),
+                            painter = painterResource(id = R.drawable.sign_out_svg),
                             contentDescription = "Sign out"
                         )
                     }.getOrElse {
