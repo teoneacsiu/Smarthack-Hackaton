@@ -33,64 +33,56 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
-object SchoolClassScreen {
-
-    data class UiClass(
-        val name: String,
-        val id: String,
-        val isHighlighted: Boolean = false   // pentru culoare diferita la icon
-    )
-
-    @Composable
-    operator fun invoke(
-        classes: List<UiClass>,
-        onClassClick: (UiClass) -> Unit = {},
-        onSettingsClick: () -> Unit = {}
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            Color(0xFF000B3F),
-                            Color(0xFF2C0074),
-                            Color(0xFFCF026F)
-                        )
+@Composable
+fun SchoolClassScreen(
+    viewModel: SchoolClassScreenViewModel = hiltViewModel(),
+    classes: List<UiClass>,
+    onClassClick: (UiClass) -> Unit = {},
+    onSettingsClick: () -> Unit = {}
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color(0xFF000B3F),
+                        Color(0xFF2C0074),
+                        Color(0xFFCF026F)
                     )
-                )
-        ) {
-            TopBar(onSettingsClick = onSettingsClick)
-
-            Text(
-                text = "Clasele tale:",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                color = Color.White,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold
                 )
             )
+    ) {
+        TopBar(onSettingsClick = onSettingsClick)
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(classes) { schoolClass ->
-                    SchoolClassCard(
-                        item = schoolClass,
-                        onClick = { onClassClick(schoolClass) }
-                    )
-                }
-                item { Spacer(modifier = Modifier.height(16.dp)) }
+        Text(
+            text = "Clasele tale:",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            color = Color.White,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold
+            )
+        )
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(classes) { schoolClass ->
+                SchoolClassCard(
+                    item = schoolClass,
+                    onClick = { onClassClick(schoolClass) }
+                )
             }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
         }
     }
 }
@@ -150,7 +142,7 @@ private fun TopBar(
 
 @Composable
 private fun SchoolClassCard(
-    item: SchoolClassScreen.UiClass,
+    item: UiClass,
     onClick: () -> Unit
 ) {
     Card(
@@ -207,18 +199,5 @@ private fun SchoolClassCard(
                 style = MaterialTheme.typography.bodySmall
             )
         }
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun SchoolClassScreenPreview() {
-    val sample = listOf(
-        SchoolClassScreen.UiClass("Clasa 7B", "7B23", isHighlighted = false),
-        SchoolClassScreen.UiClass("Clasa 8A", "8A25", isHighlighted = false),
-        SchoolClassScreen.UiClass("Clasa 6A", "6A28", isHighlighted = true)
-    )
-    MaterialTheme {
-        SchoolClassScreen(classes = sample)
     }
 }

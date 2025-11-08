@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.core.view.WindowCompat
 import com.hailavirtual.ui.nav.Navigation
-import com.hailavirtual.ui.nav.Routes
+import com.hailavirtual.ui.nav.Route
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Navigation(
-                    startDestination = Routes.START
+                    startDestination = Route.Start.route
                 )
             }
         }

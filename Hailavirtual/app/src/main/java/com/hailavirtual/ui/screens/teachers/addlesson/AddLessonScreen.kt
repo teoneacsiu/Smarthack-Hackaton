@@ -27,109 +27,109 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextFieldColors
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
-object AddLessonScreen {
+@Composable
+fun AddLessonScreen(
+    viewModel: AddLessonScreenViewModel = hiltViewModel(),
+    onChooseSubstancesClick: () -> Unit = {},
+    onChooseMaterialsClick: () -> Unit = {},
+    onChooseRecipeClick: () -> Unit = {},
+    onCreateClick: () -> Unit = {}
+) {
+    val title = viewModel.title
 
-    @Composable
-    operator fun invoke(
-        onChooseSubstancesClick: () -> Unit = {},
-        onChooseMaterialsClick: () -> Unit = {},
-        onChooseRecipeClick: () -> Unit = {},
-        onCreateClick: () -> Unit = {}
-    ) {
-        var title by rememberSaveable { mutableStateOf("") }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF000B3F),
-                            Color(0xFF2C0074),
-                            Color(0xFFCF026F)
-                        )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF000B3F),
+                        Color(0xFF2C0074),
+                        Color(0xFFCF026F)
                     )
                 )
-                .padding(horizontal = 24.dp, vertical = 32.dp)
+            )
+            .padding(horizontal = 24.dp, vertical = 32.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
 
-                Text(
-                    text = "Creeeaza lectia!",
-                    color = Color.White,
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp, bottom = 32.dp)
-                )
+            Text(
+                text = "Creeeaza lectia!",
+                color = Color.White,
+                fontSize = 30.sp,
+                fontWeight = FontWeight.ExtraBold,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, bottom = 32.dp)
+            )
 
-                // TextField titlu lectie
-                TextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    placeholder = {
-                        Text(
-                            text = "Adauga titlul lectiei",
-                            color = Color.White.copy(alpha = 0.55f)
-                        )
-                    },
-                    singleLine = true,
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color(0x55FFFFFF),
-                        textColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    ),
-                    shape = RoundedCornerShape(24.dp)
-                )
+            // TextField titlu lectie
+            TextField(
+                value = viewModel.title,
+                onValueChange = { viewModel.onTitleChange(it) },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                placeholder = {
+                    Text(
+                        text = "Adauga titlul lectiei",
+                        color = Color.White.copy(alpha = 0.55f)
+                    )
+                },
+                singleLine = true,
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color(0x55FFFFFF),
+                    textColor = Color.White,
+                    cursorColor = Color.White,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                shape = RoundedCornerShape(24.dp)
+            )
 
-                Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-                // Selectoare
-                SelectorField(
-                    label = "Alege substantele",
-                    backgroundColor = Color(0xFF2A009D),
-                    onClick = onChooseSubstancesClick
-                )
+            // Selectoare
+            SelectorField(
+                label = "Alege substantele",
+                backgroundColor = Color(0xFF2A009D),
+                onClick = onChooseSubstancesClick
+            )
 
-                Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                SelectorField(
-                    label = "Alege materialele",
-                    backgroundColor = Color(0xFFB00063),
-                    onClick = onChooseMaterialsClick
-                )
+            SelectorField(
+                label = "Alege materialele",
+                backgroundColor = Color(0xFFB00063),
+                onClick = onChooseMaterialsClick
+            )
 
-                Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                SelectorField(
-                    label = "Alege reteta",
-                    backgroundColor = Color(0xFF2A009D),
-                    onClick = onChooseRecipeClick
-                )
+            SelectorField(
+                label = "Alege reteta",
+                backgroundColor = Color(0xFF2A009D),
+                onClick = onChooseRecipeClick
+            )
 
-                Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-                GradientButton(
-                    text = "Creeeaza!",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    onClick = onCreateClick
-                )
-            }
+            GradientButton(
+                text = "Creeeaza!",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                onClick = onCreateClick
+            )
         }
     }
+}
 
     @Composable
     private fun TextFieldDefaults.textFieldColors(
@@ -142,7 +142,6 @@ object AddLessonScreen {
     ): TextFieldColors {
         return TextFieldDefaults.colors();
     }
-}
 
 @Composable
 private fun SelectorField(
@@ -223,13 +222,5 @@ private fun GradientButton(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun AddLessonScreenPreview() {
-    MaterialTheme {
-        AddLessonScreen()
     }
 }
