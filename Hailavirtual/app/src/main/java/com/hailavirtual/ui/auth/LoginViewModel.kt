@@ -1,5 +1,6 @@
 package com.hailavirtual.ui.auth
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hailavirtual.core.session.SessionManager
@@ -55,6 +56,7 @@ class LoginViewModel @Inject constructor(
                     val res = repo.signIn(email, password)
                     _state.update {
                         val user = res.getOrNull()
+                        Log.d("LoginVM", "Logged in as user=${user?.email}, role=${user?.role}")
                         it.copy(
                             isLoading = false,
                             error = res.exceptionOrNull()?.localizedMessage,

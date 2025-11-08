@@ -3,44 +3,10 @@ package com.hailavirtual
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.*
-import androidx.compose.runtime.R
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.hailavirtual.data.model.UserRole
-import com.hailavirtual.ui.auth.AuthViewModel
-import com.hailavirtual.ui.auth.LoginScreen
 import com.hailavirtual.ui.nav.Navigation
+import com.hailavirtual.ui.nav.Route
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -51,170 +17,11 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            val authVm: AuthViewModel = hiltViewModel()
-            val loggedIn by authVm.isAdmin.collectAsStateWithLifecycle()
-
             MaterialTheme {
-                if (!loggedIn) {
-                    LoginScreen(
-                        onLoggedIn = { role ->
-                            when (role) {
-                                UserRole.ADMIN -> navController.navigate("adminHome")
-                                UserRole.SCHOOL -> navController.navigate("schoolHome")
-                                UserRole.TEACHER -> navController.navigate("teacherHome")
-                            }
-                        }
-                    )
-                } else {
-                    MainScreen(
-                        onConfirmSignOut = {
-                            authVm.signOut()
-                        }
-                    )
-                }
-            }
-        }
-    }
-
-    // ------------------------------- COMPOSE UI -------------------------------
-
-    @Composable
-    fun MainScreen(onConfirmSignOut: () -> Unit) {
-        val navController = rememberNavController()
-        var showSignOutDialog by remember { mutableStateOf(false) }
-
-        Scaffold(
-            topBar = {
-                TopBar(
-                    onSignOutClick = { showSignOutDialog = true }
-                )
-            },
-            bottomBar = { BottomNavigationBar(navController) },
-            containerColor = colorResource(R.color.splash_color),
-            contentWindowInsets = WindowInsets.systemBars
-        ) { padding ->
-            Box(
-                modifier = Modifier
-                    .padding(padding)
-                    .windowInsetsPadding(WindowInsets.systemBars)
-            ) {
-                Navigation(navController = navController)
-            }
-        }
-
-        if (showSignOutDialog) {
-            SignOutDialog(
-                onConfirm = {
-                    showSignOutDialog = false
-                    onConfirmSignOut()
-                },
-                onDismiss = { showSignOutDialog = false }
-            )
-        }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun TopBar(onSignOutClick: () -> Unit) {
-        TopAppBar(
-            title = {
-                Text(
-                    text = stringResource(R.string.app_name),
-                    fontSize = 18.sp,
-                    color = Color.White
-                )
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = colorResource(id = R.color.splash_color),
-                titleContentColor = Color.White,
-                navigationIconContentColor = Color.White,
-                actionIconContentColor = Color.White
-            ),
-            actions = {
-                IconButton(onClick = onSignOutClick) {
-                    runCatching {
-                        Icon(
-                            painter = painterResource(id = R.drawable.sign_out_svg),
-                            contentDescription = "Sign out"
-                        )
-                    }.getOrElse {
-                        Text("Sign out", color = Color.White)
-                    }
-                }
-            }
-        )
-    }
-
-    @Composable
-    fun SignOutDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = { Text("Sign Out?") },
-            text = { Text("Do you really want to sign out?") },
-            confirmButton = {
-                TextButton(onClick = onConfirm) { Text("Yes") }
-            },
-            dismissButton = {
-                TextButton(onClick = onDismiss) { Text("Cancel") }
-            }
-        )
-    }
-
-    @Composable
-    fun BottomNavigationBar(navController: NavController) {
-        val items = listOf(
-            NavigationItem.Home,
-            NavigationItem.Favorites,
-            NavigationItem.Explore,
-            NavigationItem.Post,
-            NavigationItem.Profile
-        )
-
-        NavigationBar(
-            containerColor = colorResource(id = R.color.splash_color)
-        ) {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentDestination = navBackStackEntry?.destination
-            items.forEach { item ->
-                val isSelected = currentDestination
-                    ?.hierarchy
-                    ?.any { it.route == item.route } == true
-
-                NavigationBarItem(
-                    selected = isSelected,
-                    onClick = {
-                        if (!isSelected) {
-                            // Switch to another tab -> show its root
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = false
-                                }
-                                launchSingleTop = true
-                                restoreState = false   // open root of target tab
-                            }
-                        } else {
-                            // Reselect current tab -> pop to its root
-                            navController.popBackStack(item.route, inclusive = false)
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            painterResource(id = item.icon),
-                            contentDescription = item.title
-                        )
-                    },
-                    label = { Text(text = item.title) },
+                Navigation(
+                    startDestination = Route.Start.route
                 )
             }
-        }
-    }
-
-    // ------------------------------- Previews --------------------------------
-    @Preview(showBackground = true)
-    @Composable
-    fun MainScreenPreview() {
-        MaterialTheme {
-            MainScreen(onConfirmSignOut = {})
         }
     }
 }

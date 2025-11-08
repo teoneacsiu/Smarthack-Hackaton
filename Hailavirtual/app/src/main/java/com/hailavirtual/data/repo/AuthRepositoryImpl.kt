@@ -35,8 +35,9 @@ class AuthRepositoryImpl @Inject constructor(
         password: String
     ): Result<User> = runCatching {
         val fbUser = auth.signInEmail(email, password)
-        // dupa signIn, profilul e deja in Firestore
-        users.observeUser(fbUser.uid).first()!! // simplificat
+        val user = users.getUserOnce(fbUser.uid)
+            ?: throw IllegalStateException("User profile not found in Firestore for uid=${fbUser.uid}")
+        user
     }
 
     override suspend fun signUpSchool(

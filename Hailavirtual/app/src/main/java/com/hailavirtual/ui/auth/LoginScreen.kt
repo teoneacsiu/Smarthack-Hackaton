@@ -31,7 +31,7 @@ import com.hailavirtual.data.model.UserRole
 
 @Composable
 fun LoginScreen(
-    vm: LoginViewModel = hiltViewModel(),
+    vm: LoginViewModel,
     onLoggedIn: (UserRole) -> Unit = {},
 ) {
     val state by vm.state.collectAsState()

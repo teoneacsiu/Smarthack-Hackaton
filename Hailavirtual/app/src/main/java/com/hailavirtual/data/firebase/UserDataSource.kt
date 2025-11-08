@@ -7,8 +7,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.channels.awaitClose
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class UserDataSource(
+@Singleton
+class UserDataSource @Inject constructor(
     private val db: FirebaseFirestore
 ) {
     fun observeUser(userId: String): Flow<User?> = callbackFlow {
@@ -32,5 +35,13 @@ class UserDataSource(
                 )
             )
             .await()
+    }
+
+    suspend fun getUserOnce(userId: String): User? {
+        val snap = db.collection("users")
+            .document(userId)
+            .get()
+            .await()
+        return snap.toUser()
     }
 }
