@@ -49,6 +49,74 @@ fun CustomExpScreen(
         Column {
             CustomExpTopBar(onChatClick = { viewModel.toggleChat() })
             // Screen content placeholder
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                // Substante
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Button(
+                        onClick = { viewModel.toggleSubstancesDropdown() },
+                        modifier = Modifier.width(160.dp)
+                    ) {
+                        Text("Substante")
+                    }
+
+                    DropdownMenu(
+                        expanded = viewModel.isSubstancesExpanded,
+                        onDismissRequest = { viewModel.toggleSubstancesDropdown() },
+                        modifier = Modifier.width(160.dp)
+                    ) {
+                        if (viewModel.isLoading) {
+                            DropdownMenuItem(
+                                text = { Text("Se incarca...") },
+                                onClick = {}
+                            )
+                        } else {
+                            viewModel.substances.forEach { item ->
+                                DropdownMenuItem(
+                                    text = { Text(item.name) },
+                                    onClick = { viewModel.selectSubstance(item) }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Echipament
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Button(
+                        onClick = { viewModel.toggleEquipmentDropdown() },
+                        modifier = Modifier.width(160.dp)
+                    ) {
+                        Text("Echipament")
+                    }
+
+                    DropdownMenu(
+                        expanded = viewModel.isEquipmentExpanded,
+                        onDismissRequest = { viewModel.toggleEquipmentDropdown() },
+                        modifier = Modifier.width(160.dp)
+                    ) {
+                        if (viewModel.isLoading) {
+                            DropdownMenuItem(
+                                text = { Text("Se incarca...") },
+                                onClick = {}
+                            )
+                        } else {
+                            viewModel.equipments.forEach { item ->
+                                DropdownMenuItem(
+                                    text = { Text(item.name) },
+                                    onClick = { viewModel.selectEquipment(item) }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
