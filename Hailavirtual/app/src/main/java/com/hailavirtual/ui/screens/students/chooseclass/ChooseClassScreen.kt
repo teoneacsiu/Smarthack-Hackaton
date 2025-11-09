@@ -22,7 +22,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 @Composable
 fun ChooseClassScreen(
     viewModel: ChooseClassScreenViewModel = hiltViewModel(),
-    onAddClick: (String) -> Unit = {} // primeste classId valid -> nav in parent: navController.navigate("student_home/$id")
+    onAddClick: (String) -> Unit = {}, // primeste classId valid -> nav in parent: navController.navigate("student_home/$id")
+    onCustomClick: () -> Unit = {}
 ) {
     val classId = viewModel.classId
     val isLoading = viewModel.isLoading
@@ -133,9 +134,7 @@ fun ChooseClassScreen(
         // Buton plus in dreapta jos (acelasi comportament cu cel de sus)
         FloatingActionButton(
             onClick = {
-                viewModel.tryEnter { schoolClass ->
-                    onAddClick(schoolClass.id)
-                }
+                onCustomClick()
             },
             shape = CircleShape,
             containerColor = Color.White,
