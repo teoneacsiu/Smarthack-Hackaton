@@ -68,4 +68,20 @@ class ClassRepositoryImpl @Inject constructor(
             .delete()
             .await()
     }
+
+    override suspend fun getClassById(classId: String): SchoolClass? {
+        val snap = db.collection("classes").document(classId).get().await()
+        if (!snap.exists()) return null
+
+        return SchoolClass(
+            id = snap.id,
+            schoolId = snap.getString("schoolId").orElse(),
+            teacherId = snap.getString("teacherId").orElse(),
+            name = snap.getString("name").orElse(),
+            lessonIds = (snap.get("lessonIds") as? List<*>)?.filterIsInstance<String>().orEmpty()
+        )
+    }
 }
+
+private fun String?._orEmpty() = this ?: ""
+private fun String?.orElse(fallback: String = "") = this ?: fallback

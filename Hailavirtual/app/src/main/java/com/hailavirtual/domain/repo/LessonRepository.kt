@@ -17,4 +17,6 @@ interface LessonRepository {
     )
 
     suspend fun deleteLesson(lessonId: String)
+
+    suspend fun getLessonsByClassId(classId: String): List<Lesson>
 }
