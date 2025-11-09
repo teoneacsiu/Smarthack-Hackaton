@@ -43,10 +43,11 @@ import com.hailavirtual.R
 @Composable
 fun SchoolClassScreen(
     viewModel: SchoolClassScreenViewModel = hiltViewModel(),
-    classes: List<UiClass>,
     onClassClick: (UiClass) -> Unit = {},
     onSettingsClick: () -> Unit = {}
 ) {
+    val classes = viewModel.classes   // <-- use state from ViewModel
+
     Column(
         modifier = Modifier
             .fillMaxSize()
