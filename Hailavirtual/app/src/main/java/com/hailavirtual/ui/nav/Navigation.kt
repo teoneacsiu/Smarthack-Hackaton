@@ -93,7 +93,7 @@ fun Navigation(startDestination: String) {
                             popUpTo(Route.Start.route) { inclusive = true }
                         }
 
-                        UserRole.TEACHER -> navController.navigate(Route.TeacherHome.route) {
+                        UserRole.TEACHER -> navController.navigate(Route.TeacherClasses.route) {
                             popUpTo(Route.Start.route) { inclusive = true }
                         }
 
@@ -191,8 +191,7 @@ fun Navigation(startDestination: String) {
         composable(Route.TeacherClasses.route) {
             // SchoolClassScreen cere o lista in params -> mutati in ViewModel
             SchoolClassScreen(
-                classes = emptyList(),
-                onClassClick = { /* TODO */ },
+                onClassClick = { navController.navigate(Route.TeacherLessons.route) },
                 onSettingsClick = { /* TODO */ }
             )
         }
