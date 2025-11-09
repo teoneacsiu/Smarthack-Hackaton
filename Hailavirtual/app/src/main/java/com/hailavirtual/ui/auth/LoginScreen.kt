@@ -1,37 +1,31 @@
 package com.hailavirtual.ui.auth
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.hailavirtual.data.model.UserRole
+import com.hailavirtual.R
 
 @Composable
 fun LoginScreen(
-    vm: LoginViewModel,
+    vm: LoginViewModel = hiltViewModel(),
     onLoggedIn: (UserRole) -> Unit = {},
 ) {
     val state by vm.state.collectAsState()
@@ -43,68 +37,121 @@ fun LoginScreen(
         }
     }
 
-    Column(
+    // Fundal identic cu StartScreen
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF001B4E), // albastru închis sus
+                        Color(0xFF3A005F),
+                        Color(0xFFCF026F)  // magenta jos
+                    )
+                )
+            )
+            .padding(horizontal = 32.dp, vertical = 48.dp)
     ) {
-        Text("Welcome back", style = MaterialTheme.typography.headlineSmall, color = Color.White)
-        Spacer(Modifier.height(24.dp))
-        OutlinedTextField(
-            value = state.email,
-            onValueChange = { vm.onEvent(LoginEvent.EmailChanged(it)) },
-            label = { Text("Email") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color.White,
-                focusedBorderColor = Color.White,
-                unfocusedTextColor = Color.LightGray,
-                focusedTextColor = Color.White,
-                focusedLabelColor = Color.White,
-                unfocusedLabelColor = Color.White,
-                cursorColor = Color.Red
-            )
-        )
-        Spacer(Modifier.height(12.dp))
-        OutlinedTextField(
-            value = state.password,
-            onValueChange = { vm.onEvent(LoginEvent.PasswordChanged(it)) },
-            label = { Text("Password") },
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color.White,
-                focusedBorderColor = Color.White,
-                unfocusedTextColor = Color.LightGray,
-                focusedTextColor = Color.White,
-                focusedLabelColor = Color.White,
-                unfocusedLabelColor = Color.White,
-                cursorColor = Color.Red
-            )
-        )
-        Spacer(Modifier.height(24.dp))
-        Button(
-            onClick = { vm.onEvent(LoginEvent.Submit) },
-            enabled = !state.isLoading,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Red
-            )
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            if (state.isLoading) {
-                CircularProgressIndicator()
-            } else {
-                Text("Sign in")
-            }
-        }
+            // Titlu
+            Text(
+                text = "Profesor",
+                color = Color.White,
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
 
-        if (state.error != null) {
+            Spacer(Modifier.height(28.dp))
+
+            // Placeholder pentru imagine
+            Image(
+                painter = painterResource(R.drawable.course),
+                contentDescription = "login photo",
+                modifier = Modifier.size(150.dp).clip(RoundedCornerShape(24.dp)),
+                contentScale = ContentScale.Fit
+            )
+
+            Spacer(Modifier.height(40.dp))
+
+            // Câmp Username
+            OutlinedTextField(
+                value = state.email,
+                onValueChange = { vm.onEvent(LoginEvent.EmailChanged(it)) },
+                label = { Text("Username") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(50),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.White,
+                    focusedLabelColor = Color.White,
+                    unfocusedLabelColor = Color.White,
+                    cursorColor = Color.White,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White
+                )
+            )
+
             Spacer(Modifier.height(16.dp))
-            Snackbar { Text(state.error!!) }
+
+            // Câmp Parolă
+            OutlinedTextField(
+                value = state.password,
+                onValueChange = { vm.onEvent(LoginEvent.PasswordChanged(it)) },
+                label = { Text("Parolă") },
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(50),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.White,
+                    focusedLabelColor = Color.White,
+                    unfocusedLabelColor = Color.White,
+                    cursorColor = Color.White,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White
+                )
+            )
+
+            Spacer(Modifier.height(36.dp))
+
+            // Butonul mare rotunjit
+            Button(
+                onClick = { vm.onEvent(LoginEvent.Submit) },
+                enabled = !state.isLoading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .clip(RoundedCornerShape(50)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White.copy(alpha = 0.9f),
+                    contentColor = Color(0xFFCF026F)
+                )
+            ) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(
+                        color = Color(0xFFCF026F),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text = "Arată clasele",
+                        style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    )
+                }
+            }
+
+            if (state.error != null) {
+                Spacer(Modifier.height(16.dp))
+                Snackbar { Text(state.error!!) }
+            }
         }
     }
 }
