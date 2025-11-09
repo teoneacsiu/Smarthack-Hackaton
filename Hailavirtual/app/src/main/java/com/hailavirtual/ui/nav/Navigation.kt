@@ -140,10 +140,22 @@ fun Navigation(startDestination: String) {
             // ViewModel-ul StudentHomeScreen citeste "classId" din SavedStateHandle
             StudentHomeScreen(
                 onAddClick = { navController.navigate(Route.StudentLessons.route) },
-                onLessonClick = { navController.navigate(Route.StudentLessons.route) }
+                onLessonClick = { lesson ->
+                    navController.navigate(Route.StudentLessons.createRoute(lesson.id))
+                    // sau: navController.navigate("student_lessons/${lesson.id}")
+                }
             )
         }
-        composable(Route.StudentLessons.route) { StudentLessonsScreen() }
+        composable(
+            route = "student_lessons/{lessonId}",
+            arguments = listOf(
+                navArgument("lessonId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val lessonId = backStackEntry.arguments?.getString("lessonId") ?: ""
+            StudentLessonsScreen(lessonId = lessonId)
+        }
+
         composable(Route.StudentEndLesson.route) {
             EndLessonScreen(
                 lessonTitle = "Lectia 1",

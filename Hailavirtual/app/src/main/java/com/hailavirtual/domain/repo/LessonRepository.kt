@@ -1,5 +1,6 @@
 package com.hailavirtual.domain.repo
 
+import com.hailavirtual.data.model.Experiment
 import com.hailavirtual.data.model.Lesson
 
 interface LessonRepository {
@@ -19,4 +20,7 @@ interface LessonRepository {
     suspend fun deleteLesson(lessonId: String)
 
     suspend fun getLessonsByClassId(classId: String): List<Lesson>
+
+    suspend fun getLessonById(id: String): Lesson?
+    suspend fun getExperimentById(id: String): Experiment?
 }
