@@ -42,6 +42,23 @@ class StudentLessonsScreenViewModel @Inject constructor(
     var selectedEquipment by mutableStateOf<Equipement?>(null)
         private set
 
+    var dashboardSubstances by mutableStateOf<List<Substance>>(emptyList())
+        private set
+
+    fun toggleSubstancesDropdown() {
+        isSubstancesExpanded = !isSubstancesExpanded
+        if (isSubstancesExpanded) isEquipmentExpanded = false
+    }
+
+    fun selectSubstance(item: Substance) {
+        // pastram pentru textul de sus
+        selectedSubstance = item
+        isSubstancesExpanded = false
+
+        // 🔹 adaugam substanta si pe dashboard (nu o inlocuim)
+        dashboardSubstances = dashboardSubstances + item
+    }
+
     /**
      * Încarcă substanțele și echipamentele pentru lecția selectată.
      * 1️⃣ Ia lecția.
@@ -100,19 +117,9 @@ class StudentLessonsScreenViewModel @Inject constructor(
         }
     }
 
-    fun toggleSubstancesDropdown() {
-        isSubstancesExpanded = !isSubstancesExpanded
-        if (isSubstancesExpanded) isEquipmentExpanded = false
-    }
-
     fun toggleEquipmentDropdown() {
         isEquipmentExpanded = !isEquipmentExpanded
         if (isEquipmentExpanded) isSubstancesExpanded = false
-    }
-
-    fun selectSubstance(item: Substance) {
-        selectedSubstance = item
-        isSubstancesExpanded = false
     }
 
     fun selectEquipment(item: Equipement) {
