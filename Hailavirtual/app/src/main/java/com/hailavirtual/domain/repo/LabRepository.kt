@@ -10,4 +10,6 @@ interface LabRepository {
     suspend fun deleteSubstance(id: String)
     suspend fun getEquipements(): List<Equipement>
     suspend fun getSubstances(): List<Substance>
+    suspend fun getSubstanceById(id: String): Substance?
+    suspend fun getEquipementById(id: String): Equipement?
 }
