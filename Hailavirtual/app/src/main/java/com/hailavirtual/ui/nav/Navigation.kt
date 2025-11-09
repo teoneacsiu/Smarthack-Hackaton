@@ -140,8 +140,9 @@ fun Navigation(startDestination: String) {
             // ViewModel-ul StudentHomeScreen citeste "classId" din SavedStateHandle
             StudentHomeScreen(
                 onAddClick = { navController.navigate(Route.StudentLessons.route) },
-                onLessonClick = { lessonId ->
-                    navController.navigate("student_lessons/$lessonId")
+                onLessonClick = { lesson ->
+                    navController.navigate(Route.StudentLessons.createRoute(lesson.id))
+                    // sau: navController.navigate("student_lessons/${lesson.id}")
                 }
             )
         }
