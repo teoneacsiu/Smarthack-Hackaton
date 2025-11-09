@@ -12,7 +12,7 @@ sealed class Route(val route: String) {
 
     // Student flow
     data object ChooseClass : Route("student_choose_class")
-    data object StudentHome : Route("student_home")
+    data object StudentHome : Route("student_home/{classId}")
     data object StudentLessons : Route("student_lessons")
     data object StudentEndLesson : Route("student_end_lesson")
     data object StudentCustomExp : Route("student_custom_exp")
