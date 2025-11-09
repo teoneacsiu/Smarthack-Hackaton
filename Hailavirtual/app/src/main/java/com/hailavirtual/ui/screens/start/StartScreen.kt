@@ -2,22 +2,9 @@ package com.hailavirtual.ui.screens.start
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,12 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
-/**
- * Ecranul de start unde utilizatorul isi alege rolul:
- * - Profesor
- * - Elev
- * si exista un buton de login pentru admin in partea de jos.
- */
 @Composable
 fun StartScreen(
     viewModel: StartScreenViewModel = hiltViewModel(),
@@ -48,20 +29,20 @@ fun StartScreen(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF001B4E), // albastru inchis sus
+                        Color(0xFF001B4E),
                         Color(0xFF3A005F),
-                        Color(0xFFCF026F)  // magenta jos
+                        Color(0xFFCF026F)
                     )
                 )
             )
-            .padding(horizontal = 24.dp, vertical = 32.dp)
+            .padding(horizontal = 24.dp, vertical = 32.dp),
+        contentAlignment = Alignment.Center // 👈 centreaza tot continutul
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.Center // 👈 centreaza pe verticala
         ) {
-            // Titlu sus
             Text(
                 text = "Bun venit in\nlaboratorul nostru\ndigital!",
                 color = Color.White,
@@ -70,77 +51,53 @@ fun StartScreen(
                 textAlign = TextAlign.Center
             )
 
-            // Zona de mijloc (carduri rol + text explicativ)
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RoleCard(
-                        title = "Profesor",
-                        emoji = "👨‍🏫",
-                        backgroundColor = Color(0xFFDD006A),
-                        modifier = Modifier.weight(1f),
-                        onClick = { viewModel.onProfesorClick(); onProfesorClick() }
-                    )
-
-                    RoleCard(
-                        title = "Elev",
-                        emoji = "📚",
-                        backgroundColor = Color(0xFF8C0AA7),
-                        modifier = Modifier.weight(1f),
-                        onClick = { viewModel.onElevClick(); onElevClick() }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "Alege rolul care te reprezinta si hai sa incepem explorarea stiintei!",
-                    color = Color.White,
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.Center,
-                    lineHeight = 18.sp,
-                    modifier = Modifier.fillMaxWidth()
+                RoleCard(
+                    title = "Profesor",
+                    emoji = "👨‍🏫",
+                    backgroundColor = Color(0xFFDD006A),
+                    modifier = Modifier.weight(1f),
+                    onClick = { viewModel.onProfesorClick(); onProfesorClick() }
                 )
-
-                viewModel.selectedRole?.let {
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = "Rol selectat: $it",
-                        color = Color.White,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
+                RoleCard(
+                    title = "Elev",
+                    emoji = "📚",
+                    backgroundColor = Color(0xFF8C0AA7),
+                    modifier = Modifier.weight(1f),
+                    onClick = { viewModel.onElevClick(); onElevClick() }
+                )
             }
 
-            // Buton login admin jos
-            Button(
-                onClick = { viewModel.onAdminClick(); onAdminClick() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                shape = RoundedCornerShape(30.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = Color(0xFFCF026F)
-                )
-            ) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Alege rolul care te reprezinta si hai sa incepem explorarea stiintei!",
+                color = Color.White,
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center,
+                lineHeight = 18.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            viewModel.selectedRole?.let {
+                Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "Login ca admin",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    )
+                    text = "Rol selectat: $it",
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }
     }
 }
+
+
 
 @Composable
 private fun RoleCard(
@@ -165,10 +122,7 @@ private fun RoleCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = emoji,
-                fontSize = 42.sp
-            )
+            Text(text = emoji, fontSize = 42.sp)
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = title,

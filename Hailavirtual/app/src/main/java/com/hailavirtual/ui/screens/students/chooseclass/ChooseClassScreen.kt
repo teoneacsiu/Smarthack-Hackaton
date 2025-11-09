@@ -132,16 +132,14 @@ fun ChooseClassScreen(
         }
 
         // Buton plus in dreapta jos (acelasi comportament cu cel de sus)
+        // Buton plus in dreapta jos – mutat mai sus
         FloatingActionButton(
-            onClick = {
-                onCustomClick()
-            },
+            onClick = { onCustomClick() },
             shape = CircleShape,
             containerColor = Color.White,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(24.dp),
-            // Material3 FloatingActionButton nu are "enabled"; folosim loading state vizual
+                .padding(end = 24.dp, bottom = 96.dp) // ← mai sus fata de marginea de jos
         ) {
             if (isLoading) {
                 CircularProgressIndicator(
@@ -151,7 +149,7 @@ fun ChooseClassScreen(
             } else {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = "Adauga",
+                    contentDescription = "Creative mode",
                     tint = Color(0xFF3C0F84)
                 )
             }
