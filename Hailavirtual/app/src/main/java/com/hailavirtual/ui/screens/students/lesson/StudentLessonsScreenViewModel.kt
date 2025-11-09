@@ -1,6 +1,8 @@
 package com.hailavirtual.ui.screens.students.lesson
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hailavirtual.data.model.Equipement
@@ -15,39 +17,52 @@ class StudentLessonsScreenViewModel @Inject constructor(
     private val labRepository: LabRepository
 ) : ViewModel() {
 
+    // Loading state
+    var isLoading by mutableStateOf(false)
+        private set
+
+    // Dropdown states
     var isSubstancesExpanded by mutableStateOf(false)
         private set
 
     var isEquipmentExpanded by mutableStateOf(false)
         private set
 
-    var selectedSubstance by mutableStateOf<Substance?>(null)
-        private set
-
-    var selectedEquipment by mutableStateOf<Equipement?>(null)
-        private set
-
+    // Data for dropdowns
     var substances by mutableStateOf<List<Substance>>(emptyList())
         private set
 
     var equipments by mutableStateOf<List<Equipement>>(emptyList())
         private set
 
-    var isLoading by mutableStateOf(true)
+    // Selected items
+    var selectedSubstance by mutableStateOf<Substance?>(null)
         private set
 
-    init {
-        loadData()
-    }
+    var selectedEquipment by mutableStateOf<Equipement?>(null)
+        private set
 
-    private fun loadData() {
+    /**
+     * Called from StudentLessonsScreen when a lesson is opened.
+     * For now it loads ALL substances & equipments.
+     * Later you can filter by [lessonId] if you store per-lesson ids.
+     */
+    fun loadDataForLesson(lessonId: String?) {
         viewModelScope.launch {
             isLoading = true
             try {
-                substances = labRepository.getSubstances()
-                equipments = labRepository.getEquipements()
-            } catch (e: Exception) {
-                e.printStackTrace()
+                val allSubstances = labRepository.getSubstances()
+                val allEquipments = labRepository.getEquipements()
+
+                // TODO: if you have per-lesson ids, filter here using [lessonId]
+                // e.g. val filteredSubstances = allSubstances.filter { it.id in lessonSubstanceIds }
+
+                substances = allSubstances
+                equipments = allEquipments
+            } catch (_: Exception) {
+                // here you could expose an error message state if you want
+                substances = emptyList()
+                equipments = emptyList()
             } finally {
                 isLoading = false
             }

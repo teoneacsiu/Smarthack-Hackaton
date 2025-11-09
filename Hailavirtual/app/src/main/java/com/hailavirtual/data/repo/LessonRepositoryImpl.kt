@@ -71,4 +71,23 @@ class LessonRepositoryImpl @Inject constructor(
             .delete()
             .await()
     }
+
+    override suspend fun getLessonsByClassId(classId: String): List<Lesson> {
+        val snapshot = db.collection("lessons")
+            .whereEqualTo("classId", classId)
+            .get()
+            .await()
+
+        return snapshot.documents.map { doc ->
+            Lesson(
+                id = doc.id,
+                classId = doc.getString("classId").orEmpty(),
+                teacherId = doc.getString("teacherId").orEmpty(),
+                name = doc.getString("name").orEmpty(),
+                experimentIds = (doc.get("experimentIds") as? List<*>)?.filterIsInstance<String>()
+                    ?: emptyList()
+            )
+        }
+    }
+
 }

@@ -18,10 +18,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.hailavirtual.R
@@ -39,6 +41,7 @@ import com.hailavirtual.ui.screens.students.lesson.StudentLessonsScreen
 import com.hailavirtual.ui.screens.teachers.addlesson.AddLessonScreen
 import com.hailavirtual.ui.screens.teachers.lesson.TeacherLessonsScreen
 import com.hailavirtual.ui.screens.teachers.schoolclass.SchoolClassScreen
+
 
 @Composable
 fun Navigation(startDestination: String) {
@@ -113,12 +116,31 @@ fun Navigation(startDestination: String) {
         // STUDENT FLOW
         composable(Route.ChooseClass.route) {
             ChooseClassScreen(
-                onAddClick = { /* classId -> */ navController.navigate(Route.StudentHome.route) }
+                onAddClick = { classId ->
+                    // optional: encode daca ai spatii/caractere speciale
+                    // val encoded = Uri.encode(classId)
+                    // navController.navigate("student_home/$encoded")
+
+                    navController.navigate("student_home/$classId") {
+                        // optional: nu mai intoarce la ChooseClass la back
+                        popUpTo(Route.Start.route) { inclusive = false }
+                    }
+                }
             )
         }
-        composable(Route.StudentHome.route) {
+        composable(
+            route = Route.StudentHome.route, // "student_home/{classId}"
+            arguments = listOf(
+                navArgument("classId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            // Daca vrei sa-l vezi aici:
+            // val classId = backStackEntry.arguments?.getString("classId") ?: ""
+
+            // ViewModel-ul StudentHomeScreen citeste "classId" din SavedStateHandle
             StudentHomeScreen(
-                onAddClick = { navController.navigate(Route.StudentLessons.route) }
+                onAddClick = { navController.navigate(Route.StudentLessons.route) },
+                onLessonClick = { navController.navigate(Route.StudentLessons.route) }
             )
         }
         composable(Route.StudentLessons.route) { StudentLessonsScreen() }
