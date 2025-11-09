@@ -16,4 +16,6 @@ interface ClassRepository {
 
     // optional
     suspend fun deleteClass(classId: String)
+
+    suspend fun getClassById(classId: String): SchoolClass?
 }

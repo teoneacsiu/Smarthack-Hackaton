@@ -4,8 +4,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hailavirtual.data.model.Lesson
+import com.hailavirtual.domain.repo.LessonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,16 +20,23 @@ data class LessonUi(
 )
 
 @HiltViewModel
-class StudentHomeScreenViewModel @Inject constructor() : ViewModel() {
-    var lessons: List<LessonUi> by mutableStateOf(emptyList())
+class StudentHomeScreenViewModel @Inject constructor(
+    private val lessonRepository: LessonRepository,
+    savedStateHandle: SavedStateHandle
+) : ViewModel() {
+
+    private val classId: String = checkNotNull(savedStateHandle["classId"])
+
+    var lessons by mutableStateOf<List<Lesson>>(emptyList())
+        private set
 
     init {
+        loadLessons()
+    }
+
+    private fun loadLessons() {
         viewModelScope.launch {
-            lessons = listOf(
-                LessonUi("Lectia 3 -", "Lorem ipsum", Color(0xFF0000CC)),
-                LessonUi("Lectia 2 -", "Lorem ipsum", Color(0xFF3C0F84)),
-                LessonUi("Lectia 1 -", "Lorem ipsum", Color(0xFFcf0072))
-            )
+            lessons = lessonRepository.getLessonsByClassId(classId)
         }
     }
 }

@@ -22,9 +22,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 @Composable
 fun ChooseClassScreen(
     viewModel: ChooseClassScreenViewModel = hiltViewModel(),
-    onAddClick: (String) -> Unit = {}
+    onAddClick: (String) -> Unit = {} // primeste classId valid -> nav in parent: navController.navigate("student_home/$id")
 ) {
     val classId = viewModel.classId
+    val isLoading = viewModel.isLoading
+    val error = viewModel.error
 
     Box(
         modifier = Modifier
@@ -66,7 +68,7 @@ fun ChooseClassScreen(
                 contentAlignment = Alignment.Center
             ) {
                 TextField(
-                    value = viewModel.classId,
+                    value = classId,
                     onValueChange = { viewModel.onClassIdChange(it) },
                     singleLine = true,
                     textStyle = LocalTextStyle.current.copy(
@@ -85,25 +87,75 @@ fun ChooseClassScreen(
                         disabledContainerColor = Color.Transparent,
                         cursorColor = Color.Black
                     ),
-                    placeholder = { Text("") }
+                    placeholder = { Text("") },
+                    enabled = !isLoading
                 )
             }
+
+            if (error != null) {
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = error,
+                    color = Color(0xFFFFE082),
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            // --- BUTON SUB TEXTBOX ---
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    viewModel.tryEnter { schoolClass ->
+                        onAddClick(schoolClass.id) // trimitem doar daca exista clasa
+                    }
+                },
+                enabled = classId.isNotBlank() && !isLoading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(24.dp)
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(22.dp),
+                        strokeWidth = 2.dp,
+                        color = Color.White
+                    )
+                } else {
+                    Text(text = "Intra in clasa")
+                }
+            }
+            // ------------------------------
         }
 
-        // Buton plus in dreapta jos
+        // Buton plus in dreapta jos (acelasi comportament cu cel de sus)
         FloatingActionButton(
-            onClick = { onAddClick(classId) },
+            onClick = {
+                viewModel.tryEnter { schoolClass ->
+                    onAddClick(schoolClass.id)
+                }
+            },
             shape = CircleShape,
             containerColor = Color.White,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(24.dp)
+                .padding(24.dp),
+            // Material3 FloatingActionButton nu are "enabled"; folosim loading state vizual
         ) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription = "Adauga",
-                tint = Color(0xFF3C0F84)
-            )
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(22.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Adauga",
+                    tint = Color(0xFF3C0F84)
+                )
+            }
         }
     }
 }
@@ -111,7 +163,5 @@ fun ChooseClassScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ChooseClassScreenPreview() {
-    MaterialTheme {
-        ChooseClassScreen()
-    }
+    MaterialTheme { /* Preview simplu */ }
 }
