@@ -70,17 +70,36 @@ class ClassRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getClassById(classId: String): SchoolClass? {
-        val snap = db.collection("classes").document(classId).get().await()
-        if (!snap.exists()) return null
+        // 1) încercăm mai întâi după id de document, cum era
+        val docSnap = db.collection("classes").document(classId).get().await()
+        if (docSnap.exists()) {
+            return SchoolClass(
+                id = docSnap.id,
+                schoolId = docSnap.getString("schoolId").orElse(),
+                teacherId = docSnap.getString("teacherId").orElse(),
+                name = docSnap.getString("name").orElse(),
+                lessonIds = (docSnap.get("lessonIds") as? List<*>)?.filterIsInstance<String>().orEmpty()
+            )
+        }
+
+        // 2) dacă nu există document cu id-ul ăsta, încercăm să-l găsim după field-ul "id"
+        val querySnap = db.collection("classes")
+            .whereEqualTo("id", classId)
+            .limit(1)
+            .get()
+            .await()
+
+        val doc = querySnap.documents.firstOrNull() ?: return null
 
         return SchoolClass(
-            id = snap.id,
-            schoolId = snap.getString("schoolId").orElse(),
-            teacherId = snap.getString("teacherId").orElse(),
-            name = snap.getString("name").orElse(),
-            lessonIds = (snap.get("lessonIds") as? List<*>)?.filterIsInstance<String>().orEmpty()
+            id = doc.id,
+            schoolId = doc.getString("schoolId").orElse(),
+            teacherId = doc.getString("teacherId").orElse(),
+            name = doc.getString("name").orElse(),
+            lessonIds = (doc.get("lessonIds") as? List<*>)?.filterIsInstance<String>().orEmpty()
         )
     }
+
 }
 
 private fun String?._orEmpty() = this ?: ""

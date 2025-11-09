@@ -1,5 +1,6 @@
 package com.hailavirtual.ui.screens.students.customexp
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,6 +37,13 @@ fun CustomExpScreen(
 
     val coroutineScope = rememberCoroutineScope()
     var userInput by remember { mutableStateOf("") }
+
+    val prefix = "Write the answer for the following prompt in romanian, " +
+            "u talk to child from 10 to 15 years so make the text understandable, short and brief." +
+            "Don't answer in markdown, use plain text because you're writing in a chat dialog," +
+            "the text doesn't support any type of styling, also don't forget you talk to a 13 y.o." +
+            "about chemistry. if the following prompt isn't about chemistry you just tell politely" +
+            "that you don't have permission to respond to this. "
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
@@ -159,12 +167,19 @@ fun CustomExpScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Button(
                             onClick = {
-                                if (userInput.isNotBlank()) {
-                                    viewModel.addMessage(ChatMessage(userInput, true))
-                                    coroutineScope.launch {
-                                        promptViewModel.run(userInput)
-                                    }
+                                val text = userInput.trim()
+                                if (text.isNotEmpty()) {
+                                    // adauga mesajul cu textul fotografiat
+                                    viewModel.addMessage(ChatMessage(text, true))
+                                    // curata imediat UI-ul
                                     userInput = ""
+
+                                    val sendText = "$prefix$text"
+                                    coroutineScope.launch {
+                                        // foloseste snapshot-ul, nu state-ul mutabil
+                                        promptViewModel.run(sendText)
+                                        Log.d("AI RESPONSE", sendText)
+                                    }
                                 }
                             }
                         ) {

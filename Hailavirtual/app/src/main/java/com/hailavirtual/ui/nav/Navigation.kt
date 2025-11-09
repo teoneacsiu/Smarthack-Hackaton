@@ -6,7 +6,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,13 +26,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.hailavirtual.R
 import com.hailavirtual.data.model.UserRole
-import com.hailavirtual.ui.auth.LoginEvent
 import com.hailavirtual.ui.auth.LoginScreen
 import com.hailavirtual.ui.auth.LoginViewModel
 import com.hailavirtual.ui.screens.admin.main.MainScreen
 import com.hailavirtual.ui.screens.school.manageteacher.ManageScreen
 import com.hailavirtual.ui.screens.start.StartScreen
 import com.hailavirtual.ui.screens.students.chooseclass.ChooseClassScreen
+import com.hailavirtual.ui.screens.students.customexp.CustomExpScreen
 import com.hailavirtual.ui.screens.students.endlesson.EndLessonScreen
 import com.hailavirtual.ui.screens.students.home.StudentHomeScreen
 import com.hailavirtual.ui.screens.students.lesson.StudentLessonsScreen
@@ -125,7 +123,8 @@ fun Navigation(startDestination: String) {
                         // optional: nu mai intoarce la ChooseClass la back
                         popUpTo(Route.Start.route) { inclusive = false }
                     }
-                }
+                },
+                onCustomClick = { navController.navigate(Route.StudentCustomExp.route) }
             )
         }
         composable(
@@ -139,11 +138,23 @@ fun Navigation(startDestination: String) {
 
             // ViewModel-ul StudentHomeScreen citeste "classId" din SavedStateHandle
             StudentHomeScreen(
-                onAddClick = { navController.navigate(Route.StudentLessons.route) },
-                onLessonClick = { navController.navigate(Route.StudentLessons.route) }
+                onAddClick = { navController.navigate(Route.StudentCustomExp.route) },
+                onLessonClick = { lesson ->
+                    navController.navigate(Route.StudentLessons.createRoute(lesson.id))
+                    // sau: navController.navigate("student_lessons/${lesson.id}")
+                }
             )
         }
-        composable(Route.StudentLessons.route) { StudentLessonsScreen() }
+        composable(
+            route = "student_lessons/{lessonId}",
+            arguments = listOf(
+                navArgument("lessonId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val lessonId = backStackEntry.arguments?.getString("lessonId") ?: ""
+            StudentLessonsScreen(lessonId = lessonId)
+        }
+
         composable(Route.StudentEndLesson.route) {
             EndLessonScreen(
                 lessonTitle = "Lectia 1",
@@ -154,7 +165,7 @@ fun Navigation(startDestination: String) {
         }
         // Momentan CustomExpScreen nu este @Composable (clasa goala)
         composable(Route.StudentCustomExp.route) {
-            // TODO: transforma in @Composable real
+            CustomExpScreen()
         }
 
         // TEACHER FLOW

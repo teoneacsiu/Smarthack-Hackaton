@@ -1,5 +1,7 @@
 package com.hailavirtual.ui.screens.students.lesson
 
+
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,59 +10,105 @@ import androidx.lifecycle.viewModelScope
 import com.hailavirtual.data.model.Equipement
 import com.hailavirtual.data.model.Substance
 import com.hailavirtual.domain.repo.LabRepository
+import com.hailavirtual.domain.repo.LessonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class StudentLessonsScreenViewModel @Inject constructor(
-    private val labRepository: LabRepository
+    private val labRepository: LabRepository,
+    private val lessonRepository: LessonRepository
 ) : ViewModel() {
 
-    // Loading state
     var isLoading by mutableStateOf(false)
         private set
 
-    // Dropdown states
     var isSubstancesExpanded by mutableStateOf(false)
         private set
 
     var isEquipmentExpanded by mutableStateOf(false)
         private set
 
-    // Data for dropdowns
     var substances by mutableStateOf<List<Substance>>(emptyList())
         private set
 
     var equipments by mutableStateOf<List<Equipement>>(emptyList())
         private set
 
-    // Selected items
     var selectedSubstance by mutableStateOf<Substance?>(null)
         private set
 
     var selectedEquipment by mutableStateOf<Equipement?>(null)
         private set
 
+    var dashboardSubstances by mutableStateOf<List<Substance>>(emptyList())
+        private set
+
+    fun toggleSubstancesDropdown() {
+        isSubstancesExpanded = !isSubstancesExpanded
+        if (isSubstancesExpanded) isEquipmentExpanded = false
+    }
+
+    fun selectSubstance(item: Substance) {
+        // pastram pentru textul de sus
+        selectedSubstance = item
+        isSubstancesExpanded = false
+
+        // 🔹 adaugam substanta si pe dashboard (nu o inlocuim)
+        dashboardSubstances = dashboardSubstances + item
+    }
+
     /**
-     * Called from StudentLessonsScreen when a lesson is opened.
-     * For now it loads ALL substances & equipments.
-     * Later you can filter by [lessonId] if you store per-lesson ids.
+     * Încarcă substanțele și echipamentele pentru lecția selectată.
+     * 1️⃣ Ia lecția.
+     * 2️⃣ Ia primul experiment.
+     * 3️⃣ Încarcă echipamentele și substanțele corespunzătoare.
      */
     fun loadDataForLesson(lessonId: String?) {
+        if (lessonId.isNullOrBlank()) return
+
         viewModelScope.launch {
             isLoading = true
             try {
-                val allSubstances = labRepository.getSubstances()
-                val allEquipments = labRepository.getEquipements()
+                val lesson = lessonRepository.getLessonById(lessonId)
+                if (lesson == null || lesson.experimentIds.isEmpty()) {
+                    substances = emptyList()
+                    equipments = emptyList()
+                    isLoading = false
+                    return@launch
+                }
 
-                // TODO: if you have per-lesson ids, filter here using [lessonId]
-                // e.g. val filteredSubstances = allSubstances.filter { it.id in lessonSubstanceIds }
+                val firstExperimentId = lesson.experimentIds.first()
+                val experiment = lessonRepository.getExperimentById(firstExperimentId)
+                if (experiment == null) {
+                    substances = emptyList()
+                    equipments = emptyList()
+                    isLoading = false
+                    return@launch
+                }
 
-                substances = allSubstances
-                equipments = allEquipments
-            } catch (_: Exception) {
-                // here you could expose an error message state if you want
+                // Încarcă substanțele
+                val loadedSubstances = mutableListOf<Substance>()
+                for (subId in experiment.substanceIds) {
+                    val sub = labRepository.getSubstanceById(subId)
+                    Log.d("LOAD SUCCEEEDED", sub?.name ?: "Null")
+                    if (sub != null) loadedSubstances.add(sub)
+                }
+
+                // Încarcă echipamentele
+                val loadedEquipements = mutableListOf<Equipement>()
+                for (eqId in experiment.equipmentIds) {
+                    val eq = labRepository.getEquipementById(eqId)
+                    Log.d("LOAD SUCCEEEDED", eq?.name ?: "Null")
+                    if (eq != null) loadedEquipements.add(eq)
+                }
+
+                substances = loadedSubstances
+                equipments = loadedEquipements
+
+            } catch (e: Exception) {
+                e.printStackTrace()
                 substances = emptyList()
                 equipments = emptyList()
             } finally {
@@ -69,19 +117,9 @@ class StudentLessonsScreenViewModel @Inject constructor(
         }
     }
 
-    fun toggleSubstancesDropdown() {
-        isSubstancesExpanded = !isSubstancesExpanded
-        if (isSubstancesExpanded) isEquipmentExpanded = false
-    }
-
     fun toggleEquipmentDropdown() {
         isEquipmentExpanded = !isEquipmentExpanded
         if (isEquipmentExpanded) isSubstancesExpanded = false
-    }
-
-    fun selectSubstance(item: Substance) {
-        selectedSubstance = item
-        isSubstancesExpanded = false
     }
 
     fun selectEquipment(item: Equipement) {
