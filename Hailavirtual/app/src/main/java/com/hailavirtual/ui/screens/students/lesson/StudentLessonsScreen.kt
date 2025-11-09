@@ -249,8 +249,8 @@ fun DraggableSubstanceDashboard(
 
 fun mapSubstanceToDrawable(substance: Substance): Int {
     return when (substance.name.lowercase().trim()) {
-        "hcl" -> R.drawable.ic_launcher_foreground
-        "turnesol" -> R.drawable.ic_launcher_foreground
+        "hcl" -> R.drawable.substanta2
+        "turnesol" -> R.drawable.substanta1
         "water", "apa" -> R.drawable.ic_launcher_foreground
         else -> R.drawable.ic_launcher_foreground
     }
@@ -296,7 +296,7 @@ fun mapMergeToDrawable(label1: String, label2: String): Int {
 
     return when (set) {
         // example: HCl + NaOH -> “salt water” test tube
-        setOf("hcl", "turnesol") -> R.drawable.ic_launcher_background
+        setOf("hcl", "turnesol") -> R.drawable.substanta3
 
         // add your own combinations here
         // setOf("hcl", "water") -> R.drawable.test_tube_hcl_diluted
