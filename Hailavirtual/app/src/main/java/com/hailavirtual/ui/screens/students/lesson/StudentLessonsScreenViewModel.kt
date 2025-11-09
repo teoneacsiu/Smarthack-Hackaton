@@ -1,6 +1,7 @@
 package com.hailavirtual.ui.screens.students.lesson
 
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -74,6 +75,7 @@ class StudentLessonsScreenViewModel @Inject constructor(
                 val loadedSubstances = mutableListOf<Substance>()
                 for (subId in experiment.substanceIds) {
                     val sub = labRepository.getSubstanceById(subId)
+                    Log.d("LOAD SUCCEEEDED", sub?.name ?: "Null")
                     if (sub != null) loadedSubstances.add(sub)
                 }
 
@@ -81,6 +83,7 @@ class StudentLessonsScreenViewModel @Inject constructor(
                 val loadedEquipements = mutableListOf<Equipement>()
                 for (eqId in experiment.equipmentIds) {
                     val eq = labRepository.getEquipementById(eqId)
+                    Log.d("LOAD SUCCEEEDED", eq?.name ?: "Null")
                     if (eq != null) loadedEquipements.add(eq)
                 }
 
