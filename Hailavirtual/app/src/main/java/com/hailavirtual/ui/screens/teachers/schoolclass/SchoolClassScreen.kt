@@ -1,5 +1,6 @@
 package com.hailavirtual.ui.screens.teachers.schoolclass
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,11 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.hailavirtual.R
 
 @Composable
 fun SchoolClassScreen(
@@ -103,8 +106,7 @@ private fun TopBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
-            // Avatar placeholder rotund
+            // Avatar placeholder rotund (stânga)
             Box(
                 modifier = Modifier
                     .size(40.dp)
@@ -118,27 +120,29 @@ private fun TopBar(
                 )
             }
 
-            Text(
-                text = "Nume App",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f),
-                color = Color(0xFF4A30B5),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
+            // 🔵 Logo aplicație (centru)
+            Image(
+                painter = painterResource(id = R.drawable.logo), // fișierul tău din res/drawable
+                contentDescription = "Logo aplicație",
+                modifier = Modifier
+                    .height(40.dp)
+                    .weight(1f)
+                    .padding(horizontal = 24.dp),
+                alignment = Alignment.Center
             )
 
+            // Buton Setări (dreapta)
             IconButton(onClick = onSettingsClick) {
                 Icon(
                     imageVector = Icons.Default.Settings,
-                    contentDescription = "Setari",
+                    contentDescription = "Setări",
                     tint = Color(0xFF4A30B5)
                 )
             }
         }
     }
 }
+
 
 @Composable
 private fun SchoolClassCard(

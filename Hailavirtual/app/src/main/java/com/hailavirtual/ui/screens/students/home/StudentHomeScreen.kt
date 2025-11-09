@@ -1,5 +1,6 @@
 package com.hailavirtual.ui.screens.students.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,12 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.hailavirtual.data.model.Lesson
-
+import com.hailavirtual.R
 @Composable
 fun StudentHomeScreen(
     viewModel: StudentHomeScreenViewModel = hiltViewModel(),
@@ -192,6 +194,7 @@ private fun HomeTopBar(
                 .padding(horizontal = 16.dp),
             contentAlignment = Alignment.Center
         ) {
+            // Icon profil stânga
             Box(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
@@ -200,26 +203,33 @@ private fun HomeTopBar(
                     .background(Color.LightGray),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(imageVector = Icons.Outlined.Person, contentDescription = "Profil")
+                Icon(
+                    imageVector = Icons.Outlined.Person,
+                    contentDescription = "Profil"
+                )
             }
 
-            Text(
-                text = "Nume APP",
-                fontSize = 22.sp,
-                color = Color(0xFF3C0F84),
-                fontWeight = FontWeight.Bold
+            // 🔵 Logo-ul în centru (înlocuiește "Nume APP")
+            Image(
+                painter = painterResource(R.drawable.logo), // numele fișierului tău din /res/drawable
+                contentDescription = "Logo aplicație",
+                modifier = Modifier
+                    .height(40.dp)
+                    .align(Alignment.Center)
             )
 
+            // Icon Setări dreapta
             IconButton(
                 onClick = onSettingsClick,
                 modifier = Modifier.align(Alignment.CenterEnd)
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Settings,
-                    contentDescription = "Setari",
+                    contentDescription = "Setări",
                     tint = Color(0xFF3C0F84)
                 )
             }
         }
     }
 }
+
